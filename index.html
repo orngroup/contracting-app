@@ -375,6 +375,42 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
 .install-text { flex: 1; font-size: 13px; color: rgba(255,255,255,.8); line-height: 1.4; }
 .install-text strong { color: var(--gold); display: block; margin-bottom: 2px; }
 .install-dismiss { background: transparent; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px; }
+
+/* ── DESTINATION HOTEL LIST ── */
+.dest-hotel-list {
+  margin: 0 14px 10px;
+  background: var(--dark3);
+  border-radius: 0 0 14px 14px;
+  overflow: hidden;
+}
+.dest-hotel-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  cursor: pointer;
+  transition: background .12s;
+}
+.dest-hotel-item:last-child { border-bottom: none; }
+.dest-hotel-item:active { background: rgba(226,168,75,.08); }
+.dhi-rank {
+  font-size: 11px; color: var(--muted); font-weight: 700;
+  width: 20px; flex-shrink: 0; text-align: center;
+}
+.dhi-info { flex: 1; min-width: 0; }
+.dhi-name {
+  font-size: 13px; font-weight: 600; color: var(--white);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dhi-city { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.dhi-rev { font-size: 13px; font-weight: 700; color: var(--gold); flex-shrink: 0; }
+.stats-hotel-list {
+  margin-bottom: 8px;
+  background: var(--dark3);
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+}
 </style>
 </head>
 <body>
@@ -644,275 +680,260 @@ function showHotel(encodedKey) {
 }
 
 // ── DESTINATIONS ──
-function initDest() {
-  const flags = {'Thailand':'🇹🇭','UAE':'🇦🇪','India':'🇮🇳','Singapore':'🇸🇬','Australia':'🇦🇺',
-    'Switzerland':'🇨🇭','France':'🇫🇷','Indonesia':'🇮🇩','Japan':'🇯🇵','Vietnam':'🇻🇳',
-    'Italy':'🇮🇹','Malaysia':'🇲🇾','New Zealand':'🇳🇿','United Kingdom':'🇬🇧',
-    'Netherlands':'🇳🇱','Maldives':'🇲🇻','Georgia':'🇬🇪','Austria':'🇦🇹','Hong Kong':'🇭🇰',
-    'Germany':'🇩🇪','Azerbaijan':'🇦🇿','USA':'🇺🇸','Philippines':'🇵🇭','Finland':'🇫🇮',
-    'Sri Lanka':'🇱🇰','Spain':'🇪🇸','South Korea':'🇰🇷','Croatia':'🇭🇷','Greece':'🇬🇷',
-    'Portugal':'🇵🇹','Egypt':'🇪🇬','Morocco':'🇲🇦','Turkey':'🇹🇷','Canada':'🇨🇦',
-    'Ireland':'🇮🇪'};
+function initDest() { if(window._initDest) window._initDest(); }
+function toggleDestDetail(card) { if(window._toggleDest) window._toggleDest(card); }
+
+function initStats() { if(window._initStats) window._initStats(); }
+function toggleStatsSection(id) { if(window._toggleStats) window._toggleStats(id); }
+
+function navigateToSearch() { showScreen('search'); }
+</script>
+
+<style>
+.dest-hotel-item {
+  display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;transition:background .12s;
+}
+.dest-hotel-item:last-child{border-bottom:none;}
+.dest-hotel-item:active{background:rgba(226,168,75,.08);}
+.dhi-rank{font-size:11px;color:var(--muted);font-weight:700;width:20px;flex-shrink:0;text-align:center;}
+.dhi-info{flex:1;min-width:0;}
+.dhi-name{font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dhi-city{font-size:11px;color:var(--muted);margin-top:2px;}
+.dhi-rev{font-size:13px;font-weight:700;color:var(--gold);flex-shrink:0;}
+</style>
+
+<script>
+// ── DESTINATION & STATS IMPLEMENTATIONS ──
+const CITY_TO_COUNTRY = {
+  'Amsterdam':'Netherlands','Rotterdam':'Netherlands','Paris':'France','Nice':'France',
+  'Bordeaux':'France','Lyon':'France','London':'United Kingdom','Edinburgh':'United Kingdom',
+  'Manchester':'United Kingdom','Glasgow':'United Kingdom','Dublin':'Ireland',
+  'Rome':'Italy','Milan':'Italy','Venice':'Italy','Florence':'Italy','Naples':'Italy',
+  'Sorrento':'Italy','Amalfi':'Italy','Bologna':'Italy','Verona':'Italy',
+  'Barcelona':'Spain','Madrid':'Spain','Seville':'Spain','Malaga':'Spain',
+  'Berlin':'Germany','Munich':'Germany','Frankfurt':'Germany','Hamburg':'Germany',
+  'Cologne':'Germany','Heidelberg':'Germany','Dusseldorf':'Germany',
+  'Zurich':'Switzerland','Geneva':'Switzerland','Lucerne':'Switzerland',
+  'Interlaken':'Switzerland','Zermatt':'Switzerland','Bern':'Switzerland',
+  'Vienna':'Austria','Salzburg':'Austria','Innsbruck':'Austria','Graz':'Austria',
+  'Prague':'Czech Republic','Budapest':'Hungary','Warsaw':'Poland','Krakow':'Poland',
+  'Dubrovnik':'Croatia','Split':'Croatia','Athens':'Greece','Santorini':'Greece',
+  'Lisbon':'Portugal','Porto':'Portugal','Brussels':'Belgium','Stockholm':'Sweden',
+  'Copenhagen':'Denmark','Oslo':'Norway','Helsinki':'Finland','Rovaniemi':'Finland',
+  'Reykjavik':'Iceland','Istanbul':'Turkey','Cappadocia':'Turkey','Antalya':'Turkey',
+  'Bangkok':'Thailand','Pattaya':'Thailand','Phuket':'Thailand','Chiang Mai':'Thailand',
+  'Krabi':'Thailand','Koh Samui':'Thailand','Hua Hin':'Thailand',
+  'Dubai':'UAE','Abu Dhabi':'UAE','Sharjah':'UAE','Ajman':'UAE','Ras Al Khaimah':'UAE',
+  'Singapore':'Singapore','Kuala Lumpur':'Malaysia','Penang':'Malaysia','Langkawi':'Malaysia',
+  'Bali':'Indonesia','Jakarta':'Indonesia','Yogyakarta':'Indonesia','Lombok':'Indonesia',
+  'Tokyo':'Japan','Osaka':'Japan','Kyoto':'Japan','Hiroshima':'Japan','Sapporo':'Japan',
+  'Sydney':'Australia','Melbourne':'Australia','Brisbane':'Australia','Perth':'Australia',
+  'Gold Coast':'Australia','Cairns':'Australia','Adelaide':'Australia',
+  'Auckland':'New Zealand','Queenstown':'New Zealand','Wellington':'New Zealand',
+  'Christchurch':'New Zealand','Rotorua':'New Zealand',
+  'Male':'Maldives','Hanoi':'Vietnam','Ho Chi Minh City':'Vietnam','Da Nang':'Vietnam',
+  'Hoi An':'Vietnam','Phu Quoc':'Vietnam',
+  'Manila':'Philippines','Cebu':'Philippines','Boracay':'Philippines',
+  'Colombo':'Sri Lanka','Kandy':'Sri Lanka','Galle':'Sri Lanka',
+  'Hong Kong':'Hong Kong','Seoul':'South Korea','Tbilisi':'Georgia','Batumi':'Georgia',
+  'Baku':'Azerbaijan','New York':'USA','Los Angeles':'USA','Las Vegas':'USA',
+  'Miami':'USA','Chicago':'USA','San Francisco':'USA',
+  'Doha':'Qatar','Muscat':'Oman','Riyadh':'Saudi Arabia','Jeddah':'Saudi Arabia',
+  'Cairo':'Egypt','Marrakech':'Morocco','Cape Town':'South Africa',
+  'Mumbai':'India','Delhi':'India','Bangalore':'India','Chennai':'India','Goa':'India',
+  'Nairobi':'Kenya','Mauritius':'Mauritius',
+};
+
+const FLAGS = {
+  'Thailand':'🇹🇭','UAE':'🇦🇪','India':'🇮🇳','Singapore':'🇸🇬','Australia':'🇦🇺',
+  'Switzerland':'🇨🇭','France':'🇫🇷','Indonesia':'🇮🇩','Japan':'🇯🇵','Vietnam':'🇻🇳',
+  'Italy':'🇮🇹','Malaysia':'🇲🇾','New Zealand':'🇳🇿','United Kingdom':'🇬🇧',
+  'Netherlands':'🇳🇱','Maldives':'🇲🇻','Georgia':'🇬🇪','Austria':'🇦🇹','Hong Kong':'🇭🇰',
+  'Germany':'🇩🇪','Azerbaijan':'🇦🇿','USA':'🇺🇸','Philippines':'🇵🇭','Finland':'🇫🇮',
+  'Sri Lanka':'🇱🇰','Spain':'🇪🇸','South Korea':'🇰🇷','Croatia':'🇭🇷','Greece':'🇬🇷',
+  'Portugal':'🇵🇹','Egypt':'🇪🇬','Morocco':'🇲🇦','Turkey':'🇹🇷','Canada':'🇨🇦','Ireland':'🇮🇪',
+};
+
+function fmt(n) { return '$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:0}); }
+
+function makeHotelItem(h, rev, idx) {
+  const key = encodeURIComponent(h.key);
+  const div = document.createElement('div');
+  div.className = 'dest-hotel-item';
+  div.innerHTML = `
+    <div class="dhi-rank">${idx+1}</div>
+    <div class="dhi-info">
+      <div class="dhi-name">${h.hotel}</div>
+      <div class="dhi-city">${h.city}</div>
+    </div>
+    <div class="dhi-rev">${fmt(rev)}</div>`;
+  div.addEventListener('click', () => { showHotel(key); showScreen('search'); });
+  return div;
+}
+
+function makeHotelList(hotels, revFn) {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'background:var(--dark3);border-radius:0 0 12px 12px;overflow:hidden;display:none;';
+  hotels.slice(0,30).forEach((h,i) => wrap.appendChild(makeHotelItem(h, revFn(h), i)));
+  return wrap;
+}
+
+function toggleSection(listEl, arrEl) {
+  const open = listEl.style.display !== 'none';
+  listEl.style.display = open ? 'none' : 'block';
+  if (arrEl) arrEl.textContent = open ? '›' : '⌄';
+}
+
+// ── DESTINATIONS ──
+window._initDest = function() {
+  // Build country → hotels map
+  const countryHotels = {};
+  HOTELS.forEach(h => {
+    const c = CITY_TO_COUNTRY[h.city];
+    if (c) { if(!countryHotels[c]) countryHotels[c]=[]; countryHotels[c].push(h); }
+  });
+
   const el = document.getElementById('dest-list');
-  el.innerHTML = COUNTRIES.map(c => {
-    const flag = flags[c.name] || '🌍';
-    const rev = '$'+Number(c.revenue).toLocaleString('en-US',{maximumFractionDigits:0});
-    // Count hotels for this country
-    const hotelCount = HOTELS.filter(h => {
-      const key = h.key;
-      const srcs = LOOKUP[key];
-      return srcs && srcs.some(s => s.Country === c.name);
-    }).length;
-    return '<div class="dest-card" data-country="'+c.name+'" onclick="handleDestClick(this)">'
-      +'<div class="dest-flag">'+flag+'</div>'
-      +'<div class="dest-info">'
-      +'<div class="dest-name">'+c.name+'</div>'
-      +'<div class="dest-rev">'+rev+'</div>'
-      +'<div class="dest-meta">'+hotelCount+' hotels</div>'
-      +'</div>'
-      +'<div class="dest-arrow">›</div>'
-      +'</div>';
-  }).join('');
-}
+  el.innerHTML = '';
 
-function searchCountry(country) {
-  document.getElementById('srch').value = country;
-  showScreen('search');
-  doSearch();
-}
+  COUNTRIES.forEach(c => {
+    const flag = FLAGS[c.name] || '🌍';
+    const hList = (countryHotels[c.name] || []).sort((a,b) => b.total_rev - a.total_rev);
 
-// ── STATS / OVERVIEW ──
-function initStats() {
-  const totalRev = COUNTRIES.reduce((s,c)=>s+c.revenue,0);
-  const totalHotels = HOTELS.length;
-  
-  const otaData = [
-    {name:'Expedia',icon:'🟦',rev:0},
-    {name:'Agoda',icon:'🔴',rev:0},
-    {name:'Dida Travels',icon:'🟠',rev:0},
-    {name:'TBO',icon:'🟤',rev:0},
-    {name:'WebBeds',icon:'🟣',rev:0},
-    {name:'HotelBeds',icon:'🔵',rev:0},
+    // Card row
+    const card = document.createElement('div');
+    card.className = 'dest-card';
+    card.style.cssText = 'margin-bottom:0;border-radius:14px 14px 0 0;';
+    card.innerHTML = `
+      <div class="dest-flag">${flag}</div>
+      <div class="dest-info">
+        <div class="dest-name">${c.name}</div>
+        <div class="dest-rev">${fmt(c.revenue)}</div>
+        <div class="dest-meta">${hList.length} hotels</div>
+      </div>
+      <div class="dest-arrow" style="transition:transform .2s">›</div>`;
+
+    // Hotel list
+    const listWrap = makeHotelList(hList, h => h.total_rev);
+
+    card.addEventListener('click', () => {
+      toggleSection(listWrap, card.querySelector('.dest-arrow'));
+      card.style.borderRadius = listWrap.style.display!=='none' ? '14px 14px 0 0' : '14px';
+    });
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'margin:0 14px 10px;';
+    wrapper.appendChild(card);
+    wrapper.appendChild(listWrap);
+    el.appendChild(wrapper);
+  });
+};
+
+window._toggleDest = function(card) {};
+
+// ── OVERVIEW / STATS ──
+window._initStats = function() {
+  const otaList = [
+    {name:'Expedia',    icon:'🟦', rev:0, hotels:[]},
+    {name:'Agoda',      icon:'🔴', rev:0, hotels:[]},
+    {name:'Dida Travels',icon:'🟠',rev:0, hotels:[]},
+    {name:'TBO',        icon:'🟤', rev:0, hotels:[]},
+    {name:'WebBeds',    icon:'🟣', rev:0, hotels:[]},
+    {name:'HotelBeds',  icon:'🔵', rev:0, hotels:[]},
+    {name:'MakeMyTrip', icon:'❇️', rev:0, hotels:[]},
   ];
-  // Calculate from lookup
   let directRev = 0, apiRev = 0;
-  Object.values(LOOKUP).forEach(sources => {
+  const directHotels = [];
+
+  Object.entries(LOOKUP).forEach(([key, sources]) => {
+    let dRev = 0;
     sources.forEach(s => {
       const r = parseFloat(s.total_rev||0);
-      if (s.Pricing==='Contracted') directRev+=r;
+      if (s.Pricing === 'Contracted') { directRev += r; dRev += r; }
       else {
-        apiRev+=r;
-        const ota = otaData.find(o=>s.Source&&s.Source.includes(o.name));
-        if(ota) ota.rev+=r;
+        apiRev += r;
+        const ota = otaList.find(o => s.Source && s.Source.includes(o.name));
+        if (ota) { ota.rev += r; if(!ota.hotels.find(x=>x.key===key)) ota.hotels.push({key,rev:r}); }
       }
     });
-  });
-  otaData.sort((a,b)=>b.rev-a.rev);
-  const fmt = n => '$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:0});
-  
-  document.getElementById('stats-content').innerHTML =
-    '<div class="stats-hero" style="margin:14px 0 10px;">'
-    +'<div class="stats-hero-title">COMBINED REVENUE · 2025–2026</div>'
-    +'<div class="stats-hero-val">'+fmt(directRev+apiRev)+'</div>'
-    +'<div class="stats-hero-sub">'+totalHotels.toLocaleString()+' hotels · '+COUNTRIES.length+' countries</div>'
-    +'</div>'
-    +'<div class="stats-grid">'
-    +'<div class="stat-box"><div class="stat-box-val">'+fmt(directRev)+'</div><div class="stat-box-lbl">Direct Revenue</div></div>'
-    +'<div class="stat-box"><div class="stat-box-val">'+fmt(apiRev)+'</div><div class="stat-box-lbl">API Revenue</div></div>'
-    +'<div class="stat-box"><div class="stat-box-val">'+(directRev/(directRev+apiRev)*100).toFixed(1)+'%</div><div class="stat-box-lbl">Direct Share</div></div>'
-    +'<div class="stat-box"><div class="stat-box-val">'+COUNTRIES.length+'</div><div class="stat-box-lbl">Countries</div></div>'
-    +'</div>'
-    +'<div class="section-title">🌐 API Channels</div>'
-    +otaData.filter(o=>o.rev>0).map(o=>{
-      const pct = apiRev>0?(o.rev/apiRev*100):0;
-      return '<div class="ota-row">'
-        +'<span class="ota-icon-s">'+o.icon+'</span>'
-        +'<div class="ota-info">'
-        +'<div class="ota-name-s">'+o.name+'</div>'
-        +'<div class="ota-meta-s">'+pct.toFixed(1)+'% of API spend</div>'
-        +'<div class="prog-bar"><div class="prog-fill" style="width:'+Math.min(pct*3,100)+'%"></div></div>'
-        +'</div>'
-        +'<div class="ota-rev-s">'+fmt(o.rev)+'</div>'
-        +'</div>';
-    }).join('')
-    +'<div class="section-title">🏆 Top Destinations</div>'
-    +COUNTRIES.slice(0,8).map(c=>{
-      const flags2={'Thailand':'🇹🇭','UAE':'🇦🇪','India':'🇮🇳','Singapore':'🇸🇬','Australia':'🇦🇺','Switzerland':'🇨🇭','France':'🇫🇷','Indonesia':'🇮🇩'};
-      return '<div class="ota-row">'
-        +'<span class="ota-icon-s">'+(flags2[c.name]||'🌍')+'</span>'
-        +'<div class="ota-info"><div class="ota-name-s">'+c.name+'</div></div>'
-        +'<div class="ota-rev-s">'+fmt(c.revenue)+'</div>'
-        +'</div>';
-    }).join('');
-}
-
-// ── INIT ──
-function initScreens() {
-  initDest();
-  initStats();
-}
-
-// Session restore
-window.addEventListener('load', () => {
-  const stored = sessionStorage.getItem('orn_app_user');
-  if (stored) {
-    const u = JSON.parse(stored);
-    document.getElementById('login-screen').style.display='none';
-    const chip=document.getElementById('user-chip');
-    chip.textContent=u.initials; chip.style.display='block';
-    initScreens();
-  }
-});
-
-// Offline: all data is embedded in HTML — no service worker needed
-
-// ── OFFLINE DETECTION ──
-function updateOnlineStatus() {
-  const bar = document.getElementById('offline-bar');
-  if (bar) bar.classList.toggle('show', !navigator.onLine);
-}
-window.addEventListener('online',  updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-
-// ── iOS INSTALL PROMPT ──
-function checkInstallPrompt() {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone === true;
-  const dismissed = localStorage.getItem('orn_install_dismissed');
-  if (isIOS && !isStandalone && !dismissed) {
-    const prompt = document.getElementById('install-prompt');
-    if (prompt) setTimeout(() => prompt.classList.add('show'), 2000);
-  }
-}
-function dismissInstall() {
-  localStorage.setItem('orn_install_dismissed', '1');
-  document.getElementById('install-prompt')?.classList.remove('show');
-}
-
-// ── iOS SCREEN TRANSITIONS ──
-let currentScreen = 'search';
-window.showScreen = function(name) {
-  if (name === currentScreen) return;
-  const navOrder = ['search', 'dest', 'stats'];
-  const fromIdx = navOrder.indexOf(currentScreen);
-  const toIdx   = navOrder.indexOf(name);
-  const goRight = toIdx > fromIdx;
-  const fromEl  = document.getElementById('screen-' + currentScreen);
-  const toEl    = document.getElementById('screen-' + name);
-  if (!fromEl || !toEl) return;
-
-  // Set up toEl off-screen then make it visible
-  toEl.style.transform = goRight ? 'translateX(100%)' : 'translateX(-30%)';
-  toEl.style.opacity   = goRight ? '0.8' : '0.6';
-  toEl.style.transition = 'none';
-  toEl.classList.add('active');
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      // Slide from in
-      toEl.style.transition = 'transform .3s cubic-bezier(.25,.46,.45,.94), opacity .3s';
-      toEl.style.transform  = 'translateX(0)';
-      toEl.style.opacity    = '1';
-      // Slide from out
-      fromEl.style.transition = 'transform .3s cubic-bezier(.25,.46,.45,.94), opacity .3s';
-      fromEl.style.transform  = goRight ? 'translateX(-30%)' : 'translateX(100%)';
-      fromEl.style.opacity    = goRight ? '0.6' : '0.8';
-      setTimeout(() => {
-        fromEl.classList.remove('active');
-        fromEl.style.transform  = '';
-        fromEl.style.opacity    = '';
-        fromEl.style.transition = '';
-        toEl.style.transform    = '';
-        toEl.style.opacity      = '';
-        toEl.style.transition   = '';
-      }, 310);
-    });
+    if (dRev > 0) {
+      const h = HOTELS.find(x => x.key === key);
+      if (h) directHotels.push({...h, dRev});
+    }
   });
 
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('nav-' + name)?.classList.add('active');
-  currentScreen = name;
-};
+  directHotels.sort((a,b) => b.dRev - a.dRev);
+  otaList.sort((a,b) => b.rev - a.rev);
+  const totalRev = directRev + apiRev;
 
-// ── DETAIL SCREEN TRANSITION ──
-const _origShowHotel = window.showHotel;
-window.showHotel = function(key) {
-  _origShowHotel(key);
-  const detail = document.getElementById('screen-detail');
-  const search = document.getElementById('screen-search');
-  detail.style.transform = 'translateX(100%)';
-  detail.style.transition = 'none';
-  detail.classList.add('active');
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      detail.style.transition = 'transform .3s cubic-bezier(.25,.46,.45,.94)';
-      detail.style.transform  = 'translateX(0)';
-      setTimeout(() => {
-        search.classList.remove('active');
-        detail.style.transform  = '';
-        detail.style.transition = '';
-      }, 310);
-    });
-  });
-  currentScreen = 'detail';
-};
+  const el = document.getElementById('stats-content');
+  el.innerHTML = '';
 
-window.backToSearch = function() {
-  const detail = document.getElementById('screen-detail');
-  const search = document.getElementById('screen-search');
-  search.style.transform = 'translateX(-30%)';
-  search.style.opacity   = '0.6';
-  search.style.transition = 'none';
-  search.classList.add('active');
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      search.style.transition = 'transform .3s cubic-bezier(.25,.46,.45,.94), opacity .3s';
-      search.style.transform  = 'translateX(0)';
-      search.style.opacity    = '1';
-      detail.style.transition = 'transform .3s cubic-bezier(.25,.46,.45,.94)';
-      detail.style.transform  = 'translateX(100%)';
-      setTimeout(() => {
-        detail.classList.remove('active');
-        detail.style.transform  = '';
-        detail.style.transition = '';
-        search.style.transform  = '';
-        search.style.opacity    = '';
-        search.style.transition = '';
-        currentScreen = 'search';
-      }, 310);
-    });
+  // Hero
+  el.innerHTML = `
+    <div class="stats-hero">
+      <div class="stats-hero-title">COMBINED REVENUE · 2025–2026</div>
+      <div class="stats-hero-val">${fmt(totalRev)}</div>
+      <div class="stats-hero-sub">${HOTELS.length.toLocaleString()} hotels · ${COUNTRIES.length} countries</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-box-val">${fmt(directRev)}</div><div class="stat-box-lbl">Direct Revenue</div></div>
+      <div class="stat-box"><div class="stat-box-val">${fmt(apiRev)}</div><div class="stat-box-lbl">API Revenue</div></div>
+      <div class="stat-box"><div class="stat-box-val">${(directRev/totalRev*100).toFixed(1)}%</div><div class="stat-box-lbl">Direct Share</div></div>
+      <div class="stat-box"><div class="stat-box-val">${COUNTRIES.length}</div><div class="stat-box-lbl">Countries</div></div>
+    </div>`;
+
+  // Direct contracted section
+  const secTitle1 = document.createElement('div');
+  secTitle1.className = 'section-title';
+  secTitle1.textContent = '🤝 Direct Contracted';
+  el.appendChild(secTitle1);
+
+  const directList = makeHotelList(directHotels, h => h.dRev);
+  const directRow = makeOtaRow('🏨', 'Direct / Contracted Hotels',
+    `${directHotels.length} hotels · tap to expand`, directRev, totalRev, directList);
+  el.appendChild(directRow);
+  el.appendChild(directList);
+
+  // API channels
+  const secTitle2 = document.createElement('div');
+  secTitle2.className = 'section-title';
+  secTitle2.textContent = '🌐 API Channels';
+  el.appendChild(secTitle2);
+
+  otaList.filter(o => o.rev > 0).forEach(o => {
+    const sortedHotels = o.hotels
+      .sort((a,b) => b.rev - a.rev)
+      .map(h => { const info = HOTELS.find(x=>x.key===h.key); return info ? {...info, oRev:h.rev} : null; })
+      .filter(Boolean);
+    const list = makeHotelList(sortedHotels, h => h.oRev);
+    const row = makeOtaRow(o.icon, o.name,
+      `${o.hotels.length} hotels · tap to expand`, o.rev, totalRev, list);
+    el.appendChild(row);
+    el.appendChild(list);
   });
 };
 
-// ── HAPTIC-STYLE FEEDBACK (vibration where supported) ──
-function haptic(type) {
-  if (!navigator.vibrate) return;
-  if (type === 'light') navigator.vibrate(10);
-  else if (type === 'medium') navigator.vibrate(20);
-  else if (type === 'success') navigator.vibrate([10, 50, 10]);
+function makeOtaRow(icon, name, meta, rev, totalRev, listEl) {
+  const pct = (rev/totalRev*100).toFixed(1);
+  const row = document.createElement('div');
+  row.className = 'ota-row';
+  row.style.cursor = 'pointer';
+  row.innerHTML = `
+    <span class="ota-icon-s">${icon}</span>
+    <div class="ota-info">
+      <div class="ota-name-s">${name}</div>
+      <div class="ota-meta-s">${meta}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${Math.min(parseFloat(pct)*4,100)}%"></div></div>
+    </div>
+    <div class="ota-rev-s">${fmt(rev)}<span class="sarr" style="font-size:11px;color:var(--muted);display:block;text-align:right;">›</span></div>`;
+  row.addEventListener('click', () => toggleSection(listEl, row.querySelector('.sarr')));
+  return row;
 }
 
-// Add haptic to login
-const _origLogin = window.doLogin;
-window.doLogin = async function() {
-  haptic('medium');
-  await _origLogin();
-};
-
-// ── INIT ON LOAD ──
-document.addEventListener('DOMContentLoaded', () => {
-  checkInstallPrompt();
-  updateOnlineStatus();
-  
-  // Double-tap zoom handled by viewport meta tag
-
-  // Scroll handled natively
-});
-
-
-function handleCardClick(el) { showHotel(el.dataset.key); }
-function handleDestClick(el) { searchCountry(el.dataset.country); }
-
+window._toggleStats = function(id) {};
 </script>
+
 </body>
 </html>
