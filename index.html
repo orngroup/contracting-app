@@ -933,6 +933,15 @@ function makeOtaRow(icon, name, meta, rev, totalRev, listEl) {
 }
 
 window._toggleStats = function(id) {};
+
+function initScreens() {
+  if (window._initDest)  window._initDest();
+  if (window._initStats) window._initStats();
+}
+
+function navigateToSearch() {
+  showScreen('search');
+}
 </script>
 
 </body>
