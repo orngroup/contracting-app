@@ -538,11 +538,6 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
     <button class="share-btn share-btn-close" onclick="closeShare()">Close</button>
   </div>
 </div>
-<div class="year-filter-bar">
-    <button class="yf-btn active" id="yf-all" onclick="setYear('all')">All Years</button>
-    <button class="yf-btn" id="yf-2025" onclick="setYear('2025')">2025</button>
-    <button class="yf-btn" id="yf-2026" onclick="setYear('2026')">2026 YTD</button>
-  </div>
   <div class="search-top">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
@@ -550,6 +545,11 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
           placeholder="Search hotel, city or country..."
           oninput="doSearch()" autocomplete="off">
       </div>
+    </div>
+    <div class="year-filter-bar" id="yf-search">
+      <button class="yf-btn active" id="yf-all" onclick="setYear('all')">All Years</button>
+      <button class="yf-btn" id="yf-2025" onclick="setYear('2025')">2025</button>
+      <button class="yf-btn" id="yf-2026" onclick="setYear('2026')">2026 YTD</button>
     </div>
     <div class="search-results" id="search-results">
       <div class="search-empty">
@@ -569,14 +569,26 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
   <div class="screen" id="screen-dest">
     <div class="dest-header">
       <div class="dest-title">Destinations</div>
-      <div class="dest-sub">Top markets by revenue · 2025–2026</div>
+      <div class="dest-sub">Top markets by revenue</div>
+      <div class="year-filter-bar" style="padding:8px 0 0">
+        <button class="yf-btn active" id="yfd-all" onclick="setYear('all')">All Years</button>
+        <button class="yf-btn" id="yfd-2025" onclick="setYear('2025')">2025</button>
+        <button class="yf-btn" id="yfd-2026" onclick="setYear('2026')">2026 YTD</button>
+      </div>
     </div>
     <div class="dest-scroll" id="dest-list"></div>
   </div>
 
   <!-- STATS SCREEN -->
   <div class="screen" id="screen-stats">
-    <div class="stats-scroll" id="stats-content"></div>
+    <div style="padding:10px 14px 0;flex-shrink:0">
+      <div class="year-filter-bar" style="padding:0">
+        <button class="yf-btn active" id="yfs-all" onclick="setYear('all')">All Years</button>
+        <button class="yf-btn" id="yfs-2025" onclick="setYear('2025')">2025</button>
+        <button class="yf-btn" id="yfs-2026" onclick="setYear('2026')">2026 YTD</button>
+      </div>
+    </div>
+    <div class="stats-scroll" id="stats-content">
   </div>
 
   <!-- BOTTOM NAV -->
@@ -587,16 +599,28 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
       <div class="dest-title">⚖️ Rate Comparison</div>
       <div class="dest-sub">Direct vs OTA — same hotel, all channels</div>
     </div>
-    <div class="dest-scroll" id="rates-list"></div>
+    <div style="padding:10px 14px 0;flex-shrink:0">
+      <div class="year-filter-bar" style="padding:0">
+        <button class="yf-btn active" id="yfr-all" onclick="setYear('all')">All Years</button>
+        <button class="yf-btn" id="yfr-2025" onclick="setYear('2025')">2025</button>
+        <button class="yf-btn" id="yfr-2026" onclick="setYear('2026')">2026 YTD</button>
+      </div>
+    </div>
+    <div class="dest-scroll" id="rates-list">
   </div>
 
-  <!-- TARGETS SCREEN -->
-  <div class="screen" id="screen-opps">
+  <!-- TOP 100 SCREEN -->
+  <div class="screen" id="screen-top100">
     <div class="dest-header" style="flex-shrink:0">
-      <div class="dest-title">🎯 Contracting Targets</div>
-      <div class="dest-sub">High OTA spend · no direct contract yet</div>
+      <div class="dest-title">🏆 Top 100 Hotels</div>
+      <div class="dest-sub">Ranked by revenue</div>
+      <div class="year-filter-bar" style="padding:8px 0 0">
+        <button class="yf-btn active" id="yft-all" onclick="setYear('all')">All Years</button>
+        <button class="yf-btn" id="yft-2025" onclick="setYear('2025')">2025</button>
+        <button class="yf-btn" id="yft-2026" onclick="setYear('2026')">2026 YTD</button>
+      </div>
     </div>
-    <div class="dest-scroll" id="opps-list"></div>
+    <div class="dest-scroll" id="top100-list"></div>
   </div>
 
   <div class="bottom-nav">
@@ -616,10 +640,11 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
       <span class="nav-icon">⚖️</span>
       <span class="nav-label">Rates</span>
     </button>
-    <button class="nav-item" id="nav-opps" onclick="showScreen('opps')">
-      <span class="nav-icon">🎯</span>
-      <span class="nav-label">Targets</span>
+    <button class="nav-item" id="nav-top100" onclick="showScreen('top100')">
+      <span class="nav-icon">🏆</span>
+      <span class="nav-label">Top 100</span>
     </button>
+
   </div>
 </div>
 
@@ -829,10 +854,12 @@ let activeYear = 'all';
 
 function setYear(year) {
   activeYear = year;
-  // Update buttons
-  ['all','2025','2026'].forEach(y => {
-    const btn = document.getElementById('yf-'+y);
-    if (btn) btn.classList.toggle('active', y === year);
+  // Sync ALL filter button groups
+  ['yf','yfd','yfs','yfr','yft'].forEach(prefix => {
+    ['all','2025','2026'].forEach(y => {
+      const btn = document.getElementById(prefix+'-'+y);
+      if (btn) btn.classList.toggle('active', y === year);
+    });
   });
   // Refresh all screens
   renderSearch();
@@ -1331,7 +1358,7 @@ window.setYear=function(y){_baseSetYear(y);initRates();initOpps();};
 
 // Override showScreen for 5-tab nav
 const _baseShowScreen=window.showScreen;
-const NAV_ORDER=['search','dest','stats','rates','opps'];
+const NAV_ORDER=['search','dest','stats','rates'];
 window.showScreen=function(name){
   if(!NAV_ORDER.includes(name)){_baseShowScreen(name);return;}
   const cur=typeof currentScreen!=='undefined'?currentScreen:'search';
@@ -1356,6 +1383,167 @@ window.showScreen=function(name){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('nav-'+name)?.classList.add('active');
   currentScreen=name;
+};
+
+// ── TOP 100 HOTELS ──
+function initTop100() {
+  const el = document.getElementById('top100-list');
+  if (!el) return;
+
+  const yr = typeof activeYear !== 'undefined' ? activeYear : 'all';
+  const getR = (key) => {
+    const srcs = LOOKUP[key] || [];
+    return srcs.reduce((a,s) => {
+      const r = yr==='2025' ? parseFloat(s.rev_2025||0)
+              : yr==='2026' ? parseFloat(s.rev_2026||0)
+              : parseFloat(s.total_rev||0);
+      return a + r;
+    }, 0);
+  };
+  const getNts = (key) => {
+    const srcs = LOOKUP[key] || [];
+    return srcs.reduce((a,s) => {
+      const n = yr==='2025' ? parseInt(s.nts_2025||0)
+              : yr==='2026' ? parseInt(s.nts_2026||0)
+              : parseInt(s.total_nights||0);
+      return a + n;
+    }, 0);
+  };
+
+  const ranked = HOTELS
+    .map(h => ({ ...h, fRev: getR(h.key), fNts: getNts(h.key) }))
+    .filter(h => h.fRev > 0)
+    .sort((a,b) => b.fRev - a.fRev)
+    .slice(0, 100);
+
+  if (!ranked.length) {
+    el.innerHTML = '<div class="search-empty"><span class="search-empty-icon">🏆</span>No data for selected period</div>';
+    return;
+  }
+
+  el.innerHTML = '';
+  ranked.forEach((h, i) => {
+    const avg = h.fNts > 0 ? h.fRev / h.fNts : 0;
+    const sources = LOOKUP[h.key] || [];
+    const directSrcs = sources.filter(s => s.Pricing === 'Contracted');
+    const otaSrcs    = sources.filter(s => s.Pricing !== 'Contracted');
+
+    const card = document.createElement('div');
+    card.style.cssText = 'margin:0 14px 10px;background:var(--dark2);border-radius:14px;overflow:hidden;border:1px solid var(--border2);';
+
+    // Header row — tappable to expand
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;';
+    header.innerHTML = `
+      <div style="font-size:18px;font-weight:800;color:var(--gold);width:32px;flex-shrink:0;text-align:center;font-family:'Playfair Display',serif;">${i+1}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${h.hotel}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">📍 ${h.city}</div>
+        <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+          <span style="font-size:10px;background:rgba(255,255,255,.06);color:var(--muted);padding:2px 7px;border-radius:6px;">🌙 ${Number(h.fNts).toLocaleString()} nts</span>
+          <span style="font-size:10px;background:rgba(226,168,75,.1);color:rgba(226,168,75,.8);padding:2px 7px;border-radius:6px;">⌀ ${fmt(avg)}/nt</span>
+          <span style="font-size:10px;background:rgba(255,255,255,.06);color:var(--muted);padding:2px 7px;border-radius:6px;">${h.source_count} source${h.source_count!==1?'s':''}</span>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:15px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;font-style:italic;">${fmt(h.fRev)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;" class="t100-arr">› sources</div>
+      </div>`;
+
+    // Sources detail — hidden by default
+    const detail = document.createElement('div');
+    detail.style.cssText = 'display:none;border-top:1px solid var(--border2);';
+
+    const allSrcs = [...directSrcs, ...otaSrcs];
+    allSrcs.forEach(s => {
+      const sRev = yr==='2025' ? parseFloat(s.rev_2025||0) : yr==='2026' ? parseFloat(s.rev_2026||0) : parseFloat(s.total_rev||0);
+      const sNts = yr==='2025' ? parseInt(s.nts_2025||0)   : yr==='2026' ? parseInt(s.nts_2026||0)   : parseInt(s.total_nights||0);
+      if (sRev === 0 && sNts === 0) return;
+      const sAvg = sNts > 0 ? sRev/sNts : 0;
+      const isDirect = s.Pricing === 'Contracted';
+      const srcRow = document.createElement('div');
+      srcRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.04);';
+      srcRow.innerHTML = `
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.Source==='Direct / Contracted'?'Direct Contract':s.Source}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${Number(sNts).toLocaleString()} nights · ${fmt(sRev)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:13px;font-weight:700;color:${isDirect?'#3DDC84':'var(--gold)'};">${fmt(sAvg)}/nt</div>
+          <span style="font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;background:${isDirect?'rgba(61,220,132,.12)':'rgba(91,155,213,.12)'};color:${isDirect?'#3DDC84':'#60A5FA'};">${isDirect?'DIRECT':'API'}</span>
+        </div>`;
+      detail.appendChild(srcRow);
+    });
+
+    // Share + view buttons row
+    const btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:8px;padding:10px 16px;';
+    btns.innerHTML = `
+      <button onclick="showHotel('${encodeURIComponent(h.key)}');showScreen('search')" 
+        style="flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-family:Inter,sans-serif;cursor:pointer;">
+        Full Detail →
+      </button>
+      <button onclick="openShare('${encodeURIComponent(h.key)}')"
+        style="flex:1;padding:9px;border-radius:8px;border:none;background:var(--gold);color:#000;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;">
+        ↑ Share
+      </button>`;
+    detail.appendChild(btns);
+
+    // Toggle on header click
+    let open = false;
+    header.addEventListener('click', () => {
+      open = !open;
+      detail.style.display = open ? 'block' : 'none';
+      const arr = header.querySelector('.t100-arr');
+      if (arr) arr.textContent = open ? '⌄ hide' : '› sources';
+    });
+
+    card.appendChild(header);
+    card.appendChild(detail);
+    el.appendChild(card);
+  });
+}
+
+// Hook into initScreens and setYear
+const _baseInitScreens2 = window.initScreens;
+window.initScreens = function() {
+  _baseInitScreens2();
+  initTop100();
+};
+
+const _baseSetYear2 = window.setYear;
+window.setYear = function(y) {
+  _baseSetYear2(y);
+  initTop100();
+};
+
+// Hook into showScreen for top100
+const _baseShowScreen2 = window.showScreen;
+const NAV_ORDER2 = ['search','dest','stats','rates','top100'];
+window.showScreen = function(name) {
+  if (!NAV_ORDER2.includes(name)) { _baseShowScreen2(name); return; }
+  const cur = typeof currentScreen !== 'undefined' ? currentScreen : 'search';
+  if (name === cur) return;
+  const fi = NAV_ORDER2.indexOf(cur), ti = NAV_ORDER2.indexOf(name), goRight = ti > fi;
+  const fromEl = document.getElementById('screen-'+cur), toEl = document.getElementById('screen-'+name);
+  if (!fromEl||!toEl) return;
+  toEl.style.transform = goRight ? 'translateX(100%)' : 'translateX(-30%)';
+  toEl.style.opacity = '0.8'; toEl.style.transition = 'none';
+  toEl.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    toEl.style.transition = 'transform .3s cubic-bezier(.25,.46,.45,.94),opacity .3s';
+    toEl.style.transform = 'translateX(0)'; toEl.style.opacity = '1';
+    fromEl.style.transition = 'transform .3s cubic-bezier(.25,.46,.45,.94),opacity .3s';
+    fromEl.style.transform = goRight?'translateX(-30%)':'translateX(100%)'; fromEl.style.opacity='0.8';
+    setTimeout(()=>{
+      fromEl.classList.remove('active');
+      fromEl.style.transform=fromEl.style.opacity=fromEl.style.transition='';
+      toEl.style.transform=toEl.style.opacity=toEl.style.transition='';
+    }, 310);
+  }));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+name)?.classList.add('active');
+  currentScreen = name;
 };
 </script>
 
