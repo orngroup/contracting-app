@@ -411,6 +411,13 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
   border-radius: 0 0 12px 12px;
   overflow: hidden;
 }
+
+.dhi-metrics { display:flex; gap:8px; margin-top:3px; flex-wrap:wrap; }
+.dhi-m {
+  font-size:10px; color:var(--muted); background:rgba(255,255,255,.06);
+  padding:2px 7px; border-radius:6px; white-space:nowrap;
+}
+.dhi-avg { color:rgba(226,168,75,.7); }
 </style>
 </head>
 <body>
@@ -757,25 +764,36 @@ const FLAGS = {
 
 function fmt(n) { return '$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:0}); }
 
-function makeHotelItem(h, rev, idx) {
+function makeHotelItem(h, rev, idx, nights, avgRate) {
   const key = encodeURIComponent(h.key);
   const div = document.createElement('div');
   div.className = 'dest-hotel-item';
+  const nts = nights || h.total_nights || 0;
+  const avg = avgRate || (nts > 0 ? rev / nts : 0);
   div.innerHTML = `
     <div class="dhi-rank">${idx+1}</div>
     <div class="dhi-info">
       <div class="dhi-name">${h.hotel}</div>
       <div class="dhi-city">${h.city}</div>
+      <div class="dhi-metrics">
+        <span class="dhi-m">🌙 ${Number(nts).toLocaleString()} nts</span>
+        <span class="dhi-m dhi-avg">⌀ ${fmt(avg)}/nt</span>
+      </div>
     </div>
     <div class="dhi-rev">${fmt(rev)}</div>`;
   div.addEventListener('click', () => { showHotel(key); showScreen('search'); });
   return div;
 }
 
-function makeHotelList(hotels, revFn) {
+function makeHotelList(hotels, revFn, nightsFn, avgFn) {
   const wrap = document.createElement('div');
   wrap.style.cssText = 'background:var(--dark3);border-radius:0 0 12px 12px;overflow:hidden;display:none;';
-  hotels.slice(0,30).forEach((h,i) => wrap.appendChild(makeHotelItem(h, revFn(h), i)));
+  hotels.slice(0,30).forEach((h,i) => {
+    const rev = revFn(h);
+    const nts = nightsFn ? nightsFn(h) : (h.total_nights || 0);
+    const avg = avgFn ? avgFn(h) : (nts > 0 ? rev/nts : 0);
+    wrap.appendChild(makeHotelItem(h, rev, i, nts, avg));
+  });
   return wrap;
 }
 
@@ -815,7 +833,12 @@ window._initDest = function() {
       <div class="dest-arrow" style="transition:transform .2s">›</div>`;
 
     // Hotel list
-    const listWrap = makeHotelList(hList, h => h.total_rev);
+    const listWrap = makeHotelList(
+      hList,
+      h => h.total_rev,
+      h => h.total_nights || 0,
+      h => h.total_nights > 0 ? h.total_rev / h.total_nights : 0
+    );
 
     card.addEventListener('click', () => {
       toggleSection(listWrap, card.querySelector('.dest-arrow'));
@@ -859,7 +882,11 @@ window._initStats = function() {
     });
     if (dRev > 0) {
       const h = HOTELS.find(x => x.key === key);
-      if (h) directHotels.push({...h, dRev});
+      if (h) {
+        // Sum nights from direct sources
+        const dNts = sources.filter(s=>s.Pricing==='Contracted').reduce((a,s)=>a+(s.total_nights||0),0);
+        directHotels.push({...h, dRev, dNts});
+      }
     }
   });
 
@@ -890,7 +917,12 @@ window._initStats = function() {
   secTitle1.textContent = '🤝 Direct Contracted';
   el.appendChild(secTitle1);
 
-  const directList = makeHotelList(directHotels, h => h.dRev);
+  const directList = makeHotelList(
+      directHotels,
+      h => h.dRev,
+      h => h.dNts || 0,
+      h => (h.dNts||0) > 0 ? h.dRev / h.dNts : 0
+    );
   const directRow = makeOtaRow('🏨', 'Direct / Contracted Hotels',
     `${directHotels.length} hotels · tap to expand`, directRev, totalRev, directList);
   el.appendChild(directRow);
@@ -905,9 +937,17 @@ window._initStats = function() {
   otaList.filter(o => o.rev > 0).forEach(o => {
     const sortedHotels = o.hotels
       .sort((a,b) => b.rev - a.rev)
-      .map(h => { const info = HOTELS.find(x=>x.key===h.key); return info ? {...info, oRev:h.rev} : null; })
+      .map(h => {
+        const info = HOTELS.find(x=>x.key===h.key);
+        if (!info) return null;
+        // Get nights for this OTA from LOOKUP
+        const src = (LOOKUP[h.key]||[]).find(s => s.Source && s.Source.includes(o.name));
+        const oNts = src ? (src.total_nights||0) : 0;
+        const oAvg = oNts > 0 ? h.rev / oNts : 0;
+        return {...info, oRev:h.rev, oNts, oAvg};
+      })
       .filter(Boolean);
-    const list = makeHotelList(sortedHotels, h => h.oRev);
+    const list = makeHotelList(sortedHotels, h => h.oRev, h => h.oNts, h => h.oAvg);
     const row = makeOtaRow(o.icon, o.name,
       `${o.hotels.length} hotels · tap to expand`, o.rev, totalRev, list);
     el.appendChild(row);
