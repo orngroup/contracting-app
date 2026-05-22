@@ -418,6 +418,80 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
   padding:2px 7px; border-radius:6px; white-space:nowrap;
 }
 .dhi-avg { color:rgba(226,168,75,.7); }
+
+.year-filter-bar {
+  display:flex; gap:8px; padding:10px 16px;
+  background:var(--dark2); border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.yf-btn {
+  flex:1; padding:8px 4px; border-radius:10px; border:1px solid var(--border);
+  background:transparent; color:var(--muted); font-size:12px; font-weight:600;
+  font-family:'Inter',sans-serif; cursor:pointer; transition:all .2s;
+}
+.yf-btn.active {
+  background:var(--gold); color:#000; border-color:var(--gold);
+}
+.yf-btn:not(.active):active { background:rgba(226,168,75,.1); }
+
+/* rate badge on hotel cards */
+.rc-rate {
+  font-size:11px; color:rgba(226,168,75,.8); font-weight:700;
+  background:rgba(226,168,75,.1); padding:2px 8px; border-radius:6px;
+}
+
+.rate-card{margin:0 14px 12px;background:var(--dark2);border-radius:14px;overflow:hidden;border:1px solid var(--border2);}
+.rate-card-header{padding:14px 16px 10px;border-bottom:1px solid var(--border2);cursor:pointer;}
+.rate-hotel-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rate-city{font-size:11px;color:var(--muted);}
+.rate-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle;}
+.rate-badge.cheaper{background:rgba(61,220,132,.15);color:#3DDC84;}
+.rate-badge.pricier{background:rgba(248,113,113,.15);color:#F87171;}
+.rate-badge.equal{background:rgba(255,255,255,.08);color:var(--muted);}
+.rate-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.04);}
+.rate-row:last-child{border-bottom:none;}
+.rate-src-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center;}
+.rate-src-name{flex:1;font-size:12px;color:var(--white);font-weight:500;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rate-src-avg{font-size:14px;font-weight:700;flex-shrink:0;min-width:68px;text-align:right;}
+.rate-src-avg.best{color:#3DDC84;}.rate-src-avg.worst{color:#F87171;}.rate-src-avg.mid{color:var(--gold);}
+.rate-src-detail{font-size:10px;color:var(--muted);text-align:right;}
+.rate-bar-track{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:3px;}
+.rate-bar-fill{height:100%;border-radius:2px;}
+.opp-card{margin:0 14px 10px;background:var(--dark2);border-radius:14px;padding:16px;border:1px solid rgba(248,113,113,.15);cursor:pointer;transition:all .15s;}
+.opp-card:active{transform:scale(0.99);background:rgba(248,113,113,.05);}
+.opp-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.opp-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.opp-city{font-size:11px;color:var(--muted);}
+.opp-rev{font-size:16px;font-weight:700;color:var(--red);flex-shrink:0;}
+.opp-sources{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.opp-src-pill{font-size:10px;padding:2px 8px;border-radius:6px;background:rgba(248,113,113,.1);color:#F87171;font-weight:600;}
+.opp-potential{font-size:11px;color:rgba(61,220,132,.7);margin-top:6px;}
+.opp-rank{font-size:11px;color:var(--muted);margin-bottom:10px;padding:0 14px;}
+#share-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.85);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px;}
+#share-overlay.show{display:flex;}
+.share-card{background:#1C1C1C;border:1px solid rgba(226,168,75,.3);border-radius:20px;
+  padding:22px;width:100%;max-width:360px;overflow-y:auto;max-height:70vh;}
+.share-card-logo{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold);margin-bottom:12px;}
+.share-card-hotel{font-size:18px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.share-card-city{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.share-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.share-kpi{background:rgba(255,255,255,.05);border-radius:10px;padding:10px;}
+.share-kpi-val{font-size:16px;font-weight:700;color:var(--gold);}
+.share-kpi-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.share-src-row{display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.share-src-row:last-child{border-bottom:none;}
+.share-src-name{font-size:12px;color:var(--white);font-weight:500;}
+.share-src-avg{font-size:13px;font-weight:700;color:var(--gold);}
+.share-footer{font-size:10px;color:rgba(255,255,255,.25);text-align:center;margin-top:12px;}
+.share-actions{display:flex;gap:10px;width:100%;max-width:360px;}
+.share-btn{flex:1;padding:14px;border-radius:12px;border:none;font-size:14px;
+  font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;}
+.share-btn-copy{background:var(--gold);color:#000;}
+.share-btn-close{background:rgba(255,255,255,.1);color:var(--white);}
+.nav-label{font-size:9px;}
 </style>
 </head>
 <body>
@@ -457,6 +531,18 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
     <div class="install-text"><strong>Add to Home Screen</strong>Tap Share → "Add to Home Screen" for the full app experience</div>
     <button class="install-dismiss" onclick="dismissInstall()">✕</button>
   </div>
+  <div id="share-overlay" onclick="closeShare(event)">
+  <div class="share-card" id="share-card-content"></div>
+  <div class="share-actions">
+    <button class="share-btn share-btn-copy" onclick="copyShare()">📋 Copy & Share</button>
+    <button class="share-btn share-btn-close" onclick="closeShare()">Close</button>
+  </div>
+</div>
+<div class="year-filter-bar">
+    <button class="yf-btn active" id="yf-all" onclick="setYear('all')">All Years</button>
+    <button class="yf-btn" id="yf-2025" onclick="setYear('2025')">2025</button>
+    <button class="yf-btn" id="yf-2026" onclick="setYear('2026')">2026 YTD</button>
+  </div>
   <div class="search-top">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
@@ -494,6 +580,25 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
   </div>
 
   <!-- BOTTOM NAV -->
+
+  <!-- RATE COMPARISON SCREEN -->
+  <div class="screen" id="screen-rates">
+    <div class="dest-header" style="flex-shrink:0">
+      <div class="dest-title">⚖️ Rate Comparison</div>
+      <div class="dest-sub">Direct vs OTA — same hotel, all channels</div>
+    </div>
+    <div class="dest-scroll" id="rates-list"></div>
+  </div>
+
+  <!-- TARGETS SCREEN -->
+  <div class="screen" id="screen-opps">
+    <div class="dest-header" style="flex-shrink:0">
+      <div class="dest-title">🎯 Contracting Targets</div>
+      <div class="dest-sub">High OTA spend · no direct contract yet</div>
+    </div>
+    <div class="dest-scroll" id="opps-list"></div>
+  </div>
+
   <div class="bottom-nav">
     <button class="nav-item active" id="nav-search" onclick="showScreen('search')">
       <span class="nav-icon">🔍</span>
@@ -506,6 +611,14 @@ body { overscroll-behavior: none; position: fixed; width: 100%; }
     <button class="nav-item" id="nav-stats" onclick="showScreen('stats')">
       <span class="nav-icon">📊</span>
       <span class="nav-label">Overview</span>
+    </button>
+    <button class="nav-item" id="nav-rates" onclick="showScreen('rates')">
+      <span class="nav-icon">⚖️</span>
+      <span class="nav-label">Rates</span>
+    </button>
+    <button class="nav-item" id="nav-opps" onclick="showScreen('opps')">
+      <span class="nav-icon">🎯</span>
+      <span class="nav-label">Targets</span>
     </button>
   </div>
 </div>
@@ -711,6 +824,44 @@ function navigateToSearch() { showScreen('search'); }
 </style>
 
 <script>
+// ── YEAR FILTER ──
+let activeYear = 'all';
+
+function setYear(year) {
+  activeYear = year;
+  // Update buttons
+  ['all','2025','2026'].forEach(y => {
+    const btn = document.getElementById('yf-'+y);
+    if (btn) btn.classList.toggle('active', y === year);
+  });
+  // Refresh all screens
+  renderSearch();
+  if (window._initDest)  window._initDest();
+  if (window._initStats) window._initStats();
+}
+
+function getRevForYear(h_or_src) {
+  if (activeYear === '2025') return parseFloat(h_or_src.rev_2025 || 0);
+  if (activeYear === '2026') return parseFloat(h_or_src.rev_2026 || 0);
+  return parseFloat(h_or_src.total_rev || 0);
+}
+
+function getNtsForYear(h_or_src) {
+  if (activeYear === '2025') return parseInt(h_or_src.nts_2025 || 0);
+  if (activeYear === '2026') return parseInt(h_or_src.nts_2026 || 0);
+  return parseInt(h_or_src.total_nights || 0);
+}
+
+// Get hotel-level rev/nts for year from LOOKUP (sum across all sources)
+function getHotelRevForYear(key) {
+  const sources = LOOKUP[key] || [];
+  return sources.reduce((s, src) => s + getRevForYear(src), 0);
+}
+function getHotelNtsForYear(key) {
+  const sources = LOOKUP[key] || [];
+  return sources.reduce((s, src) => s + getNtsForYear(src), 0);
+}
+
 // ── DESTINATION & STATS IMPLEMENTATIONS ──
 const CITY_TO_COUNTRY = {
   'Amsterdam':'Netherlands','Rotterdam':'Netherlands','Paris':'France','Nice':'France',
@@ -834,10 +985,14 @@ window._initDest = function() {
 
     // Hotel list
     const listWrap = makeHotelList(
-      hList,
-      h => h.total_rev,
-      h => h.total_nights || 0,
-      h => h.total_nights > 0 ? h.total_rev / h.total_nights : 0
+      hList.map(h => ({...h,
+        fRev: getHotelRevForYear ? getHotelRevForYear(h.key) : h.total_rev,
+        fNts: getHotelNtsForYear ? getHotelNtsForYear(h.key) : h.total_nights,
+      })).filter(h => h.fRev > 0 || (typeof activeYear === 'undefined' || activeYear === 'all'))
+        .sort((a,b) => b.fRev - a.fRev),
+      h => h.fRev,
+      h => h.fNts || 0,
+      h => h.fNts > 0 ? h.fRev / h.fNts : 0
     );
 
     card.addEventListener('click', () => {
@@ -869,24 +1024,33 @@ window._initStats = function() {
   let directRev = 0, apiRev = 0;
   const directHotels = [];
 
+  const getR = (s) => typeof activeYear !== 'undefined' && activeYear === '2025' ? parseFloat(s.rev_2025||0)
+    : typeof activeYear !== 'undefined' && activeYear === '2026' ? parseFloat(s.rev_2026||0)
+    : parseFloat(s.total_rev||0);
+  const getN = (s) => typeof activeYear !== 'undefined' && activeYear === '2025' ? parseInt(s.nts_2025||0)
+    : typeof activeYear !== 'undefined' && activeYear === '2026' ? parseInt(s.nts_2026||0)
+    : parseInt(s.total_nights||0);
+
   Object.entries(LOOKUP).forEach(([key, sources]) => {
-    let dRev = 0;
+    let dRev = 0, dNts = 0;
     sources.forEach(s => {
-      const r = parseFloat(s.total_rev||0);
-      if (s.Pricing === 'Contracted') { directRev += r; dRev += r; }
+      const r = getR(s);
+      const n = getN(s);
+      if (s.Pricing === 'Contracted') { directRev += r; dRev += r; dNts += n; }
       else {
         apiRev += r;
         const ota = otaList.find(o => s.Source && s.Source.includes(o.name));
-        if (ota) { ota.rev += r; if(!ota.hotels.find(x=>x.key===key)) ota.hotels.push({key,rev:r}); }
+        if (ota) {
+          ota.rev += r;
+          const existing = ota.hotels.find(x=>x.key===key);
+          if (existing) { existing.rev += r; existing.nts += n; }
+          else ota.hotels.push({key, rev:r, nts:n});
+        }
       }
     });
     if (dRev > 0) {
       const h = HOTELS.find(x => x.key === key);
-      if (h) {
-        // Sum nights from direct sources
-        const dNts = sources.filter(s=>s.Pricing==='Contracted').reduce((a,s)=>a+(s.total_nights||0),0);
-        directHotels.push({...h, dRev, dNts});
-      }
+      if (h) directHotels.push({...h, dRev, dNts});
     }
   });
 
@@ -936,13 +1100,12 @@ window._initStats = function() {
 
   otaList.filter(o => o.rev > 0).forEach(o => {
     const sortedHotels = o.hotels
+      .filter(h => h.rev > 0)
       .sort((a,b) => b.rev - a.rev)
       .map(h => {
         const info = HOTELS.find(x=>x.key===h.key);
         if (!info) return null;
-        // Get nights for this OTA from LOOKUP
-        const src = (LOOKUP[h.key]||[]).find(s => s.Source && s.Source.includes(o.name));
-        const oNts = src ? (src.total_nights||0) : 0;
+        const oNts = h.nts || 0;
         const oAvg = oNts > 0 ? h.rev / oNts : 0;
         return {...info, oRev:h.rev, oNts, oAvg};
       })
@@ -982,6 +1145,218 @@ function initScreens() {
 function navigateToSearch() {
   showScreen('search');
 }
+
+// ── RATE COMPARISON ──
+function initRates() {
+  const el = document.getElementById('rates-list');
+  if (!el) return;
+  const yr = typeof activeYear !== 'undefined' ? activeYear : 'all';
+  const getR = s => yr==='2025'?parseFloat(s.rev_2025||0):yr==='2026'?parseFloat(s.rev_2026||0):parseFloat(s.total_rev||0);
+  const getN = s => yr==='2025'?parseInt(s.nts_2025||0):yr==='2026'?parseInt(s.nts_2026||0):parseInt(s.total_nights||0);
+
+  const comparisons = [];
+  Object.entries(LOOKUP).forEach(([key, sources]) => {
+    const enriched = sources.map(s=>({...s,fRev:getR(s),fNts:getN(s),fAvg:getN(s)>0?getR(s)/getN(s):0}))
+      .filter(s=>s.fNts>5);
+    const hasDirect = enriched.some(s=>s.Pricing==='Contracted');
+    const hasOTA    = enriched.some(s=>s.Pricing!=='Contracted');
+    if (!hasDirect||!hasOTA) return;
+    const totalRev = enriched.reduce((a,s)=>a+s.fRev,0);
+    if (totalRev < 1000) return;
+    const h = HOTELS.find(x=>x.key===key);
+    comparisons.push({key,hotel:h?.hotel||key.split('||')[0],city:h?.city||key.split('||')[1],enriched,totalRev});
+  });
+  comparisons.sort((a,b)=>b.totalRev-a.totalRev);
+
+  if (!comparisons.length) {
+    el.innerHTML='<div class="search-empty"><span class="search-empty-icon">⚖️</span>No hotels with both direct and OTA rates in this period</div>';
+    return;
+  }
+
+  const OTA_ICONS={'Expedia':'🟦','Agoda':'🔴','Dida':'🟠','TBO':'🟤','WebBeds':'🟣','HotelBeds':'🔵','MakeMyTrip':'❇️'};
+  const getIcon = src => { const m=Object.entries(OTA_ICONS).find(([k])=>src.includes(k)); return m?m[1]:(src==='Direct / Contracted'?'🤝':'🌐'); };
+
+  el.innerHTML = `<div style="font-size:11px;color:var(--muted);padding:10px 16px 4px">${comparisons.length} hotels with direct + OTA rates</div>`;
+
+  comparisons.slice(0,60).forEach(c => {
+    const avgs = c.enriched.map(s=>s.fAvg).filter(a=>a>0);
+    const minAvg=Math.min(...avgs), maxAvg=Math.max(...avgs);
+    const spread=maxAvg-minAvg;
+    const directSrcs=c.enriched.filter(s=>s.Pricing==='Contracted');
+    const directAvg=directSrcs.length?directSrcs.reduce((a,s)=>a+s.fAvg,0)/directSrcs.length:0;
+    const directCheaper=directAvg<=Math.min(...c.enriched.filter(s=>s.Pricing!=='Contracted').map(s=>s.fAvg))+1;
+    const badge=spread>5?`<span class="rate-badge ${directCheaper?'cheaper':'pricier'}">${directCheaper?'Direct cheaper ✓':'OTA cheaper ⚠'}</span>`:'<span class="rate-badge equal">Similar rates</span>';
+    const sorted=[...c.enriched].sort((a,b)=>a.fAvg-b.fAvg);
+    const card=document.createElement('div');
+    card.className='rate-card';
+    card.innerHTML=`<div class="rate-card-header" onclick="openShare('${encodeURIComponent(c.key)}')">
+      <div class="rate-hotel-name">${c.hotel} ${badge}</div>
+      <div class="rate-city">📍 ${c.city}${spread>5?' · '+fmt(spread)+'/nt spread':''} · tap to share</div>
+    </div>
+    ${sorted.map(s=>{
+      const isMin=s.fAvg===minAvg,isMax=s.fAvg===maxAvg&&minAvg!==maxAvg;
+      const cls=isMin?'best':isMax?'worst':'mid';
+      const barW=maxAvg>0?(s.fAvg/maxAvg*100).toFixed(0):0;
+      const barC=isMin?'#3DDC84':isMax?'#F87171':'#E2A84B';
+      return `<div class="rate-row">
+        <span class="rate-src-icon">${getIcon(s.Source)}</span>
+        <div style="flex:1;min-width:0">
+          <div class="rate-src-name">${s.Source==='Direct / Contracted'?'Direct Contract':s.Source}</div>
+          <div class="rate-src-detail">${Number(s.fNts).toLocaleString()} nights · ${fmt(s.fRev)}</div>
+          <div class="rate-bar-track"><div class="rate-bar-fill" style="width:${barW}%;background:${barC}"></div></div>
+        </div>
+        <div class="rate-src-avg ${cls}">${fmt(s.fAvg)}<span style="font-size:9px;font-weight:400">/nt</span></div>
+      </div>`;
+    }).join('')}`;
+    el.appendChild(card);
+  });
+}
+
+// ── CONTRACTING TARGETS ──
+function initOpps() {
+  const el=document.getElementById('opps-list');
+  if(!el)return;
+  const yr=typeof activeYear!=='undefined'?activeYear:'all';
+  const getR=s=>yr==='2025'?parseFloat(s.rev_2025||0):yr==='2026'?parseFloat(s.rev_2026||0):parseFloat(s.total_rev||0);
+  const opps=[];
+  Object.entries(LOOKUP).forEach(([key,sources])=>{
+    if(sources.some(s=>s.Pricing==='Contracted'))return;
+    const rev=sources.reduce((a,s)=>a+getR(s),0);
+    if(rev<3000)return;
+    const nts=sources.reduce((a,s)=>a+parseInt(s.total_nights||0),0);
+    const srcs=[...new Set(sources.map(s=>s.Source))];
+    const h=HOTELS.find(x=>x.key===key);
+    opps.push({key,hotel:h?.hotel||key.split('||')[0],city:h?.city||key.split('||')[1],rev,nts,srcs,avg:nts>0?rev/nts:0});
+  });
+  opps.sort((a,b)=>b.rev-a.rev);
+  if(!opps.length){el.innerHTML='<div class="search-empty"><span class="search-empty-icon">🎯</span>No targets found</div>';return;}
+  el.innerHTML=`<div class="opp-rank">${opps.length} hotels · no direct contract · sorted by OTA spend</div>`;
+  opps.slice(0,80).forEach(o=>{
+    const saving=Math.round(o.avg*0.15);
+    const card=document.createElement('div');
+    card.className='opp-card';
+    card.innerHTML=`<div class="opp-header"><div><div class="opp-name">${o.hotel}</div><div class="opp-city">📍 ${o.city}</div></div><div class="opp-rev">${fmt(o.rev)}</div></div>
+      <div class="opp-sources">${o.srcs.slice(0,4).map(s=>`<span class="opp-src-pill">${s}</span>`).join('')}</div>
+      <div class="opp-potential">💡 ${Number(o.nts).toLocaleString()} nights · ~${fmt(o.avg)}/nt avg · est ${fmt(saving)}/nt saving with direct</div>`;
+    card.addEventListener('click',()=>{showHotel(encodeURIComponent(o.key));showScreen('search');});
+    el.appendChild(card);
+  });
+}
+
+// ── SHARE CARD ──
+let shareData=null;
+function openShare(encodedKey){
+  const key=decodeURIComponent(encodedKey);
+  const sources=LOOKUP[key];if(!sources)return;
+  const hotel=HOTELS.find(h=>h.key===key);
+  const yr=typeof activeYear!=='undefined'?activeYear:'all';
+  const getR=s=>yr==='2025'?parseFloat(s.rev_2025||0):yr==='2026'?parseFloat(s.rev_2026||0):parseFloat(s.total_rev||0);
+  const getN=s=>yr==='2025'?parseInt(s.nts_2025||0):yr==='2026'?parseInt(s.nts_2026||0):parseInt(s.total_nights||0);
+  const enriched=sources.map(s=>({...s,fRev:getR(s),fNts:getN(s),fAvg:getN(s)>0?getR(s)/getN(s):0}))
+    .filter(s=>s.fNts>0).sort((a,b)=>a.fAvg-b.fAvg);
+  const totalRev=enriched.reduce((a,s)=>a+s.fRev,0);
+  const totalNts=enriched.reduce((a,s)=>a+s.fNts,0);
+  const avgRate=totalNts>0?totalRev/totalNts:0;
+  const yrLabel=yr==='all'?'2025–2026':yr;
+  shareData={hotelName:hotel?.hotel||key.split('||')[0],city:hotel?.city||key.split('||')[1],enriched,totalRev,totalNts,avgRate,yrLabel,key};
+  document.getElementById('share-card-content').innerHTML=`
+    <div class="share-card-logo">ORN· Supply Hub</div>
+    <div class="share-card-hotel">${shareData.hotelName}</div>
+    <div class="share-card-city">📍 ${shareData.city} · ${yrLabel}</div>
+    <div class="share-card-grid">
+      <div class="share-kpi"><div class="share-kpi-val">${fmt(totalRev)}</div><div class="share-kpi-lbl">Revenue</div></div>
+      <div class="share-kpi"><div class="share-kpi-val">${Number(totalNts).toLocaleString()}</div><div class="share-kpi-lbl">Room Nights</div></div>
+      <div class="share-kpi"><div class="share-kpi-val">${fmt(avgRate)}</div><div class="share-kpi-lbl">Blended Rate</div></div>
+      <div class="share-kpi"><div class="share-kpi-val">${sources.length}</div><div class="share-kpi-lbl">Sources</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Rate by Source</div>
+    ${enriched.map(s=>`<div class="share-src-row">
+      <span class="share-src-name">${s.Source==='Direct / Contracted'?'Direct Contract':s.Source}</span>
+      <span class="share-src-avg">${fmt(s.fAvg)}/nt</span>
+    </div>`).join('')}
+    <div class="share-footer">ORN Supply Negotiation Hub · ${new Date().toLocaleDateString()}</div>`;
+  document.getElementById('share-overlay').classList.add('show');
+}
+function closeShare(e){
+  if(e&&e.target!==document.getElementById('share-overlay'))return;
+  document.getElementById('share-overlay').classList.remove('show');
+}
+function copyShare(){
+  if(!shareData)return;
+  const {hotelName,city,enriched,totalRev,totalNts,avgRate,yrLabel}=shareData;
+  const text=['ORN Supply Negotiation Hub','═══════════════════',hotelName,city+' · '+yrLabel,'',
+    'Revenue:      '+fmt(totalRev),'Room Nights:  '+Number(totalNts).toLocaleString(),'Blended Rate: '+fmt(avgRate)+'/nt','',
+    'RATES BY SOURCE:',
+    ...enriched.map(s=>(s.Source==='Direct / Contracted'?'Direct Contract':s.Source).padEnd(22)+fmt(s.fAvg)+'/nt · '+Number(s.fNts).toLocaleString()+' nights'),
+    '','Generated: '+new Date().toLocaleDateString()].join('\n');
+  const doShare=()=>{
+    if(navigator.share){navigator.share({title:hotelName,text}).catch(()=>doCopy(text));}
+    else doCopy(text);
+  };
+  const doCopy=t=>{
+    navigator.clipboard?.writeText(t).then(()=>flashBtn()).catch(()=>{
+      const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);
+      ta.select();document.execCommand('copy');document.body.removeChild(ta);flashBtn();
+    });
+  };
+  const flashBtn=()=>{
+    const btn=document.querySelector('.share-btn-copy');
+    if(btn){btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='📋 Copy & Share',2000);}
+  };
+  doShare();
+}
+
+// Add share btn to hotel detail
+const _baseShowHotel=window.showHotel;
+window.showHotel=function(k){
+  _baseShowHotel(k);
+  setTimeout(()=>{
+    const back=document.querySelector('.detail-back');
+    if(!back)return;
+    let sb=back.querySelector('.detail-share-btn');
+    if(!sb){sb=document.createElement('button');sb.className='detail-share-btn';
+      sb.style.cssText='margin-left:auto;background:var(--gold);color:#000;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;';
+      sb.textContent='↑ Share';back.appendChild(sb);}
+    sb.onclick=e=>{e.stopPropagation();openShare(k);};
+  },60);
+};
+
+// Extend initScreens
+const _baseInitScreens=window.initScreens;
+window.initScreens=function(){_baseInitScreens();initRates();initOpps();};
+
+// Extend setYear
+const _baseSetYear=window.setYear;
+window.setYear=function(y){_baseSetYear(y);initRates();initOpps();};
+
+// Override showScreen for 5-tab nav
+const _baseShowScreen=window.showScreen;
+const NAV_ORDER=['search','dest','stats','rates','opps'];
+window.showScreen=function(name){
+  if(!NAV_ORDER.includes(name)){_baseShowScreen(name);return;}
+  const cur=typeof currentScreen!=='undefined'?currentScreen:'search';
+  if(name===cur)return;
+  const fi=NAV_ORDER.indexOf(cur),ti=NAV_ORDER.indexOf(name),goRight=ti>fi;
+  const fromEl=document.getElementById('screen-'+cur),toEl=document.getElementById('screen-'+name);
+  if(!fromEl||!toEl)return;
+  toEl.style.transform=goRight?'translateX(100%)':'translateX(-30%)';
+  toEl.style.opacity='0.8';toEl.style.transition='none';
+  toEl.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    toEl.style.transition='transform .3s cubic-bezier(.25,.46,.45,.94),opacity .3s';
+    toEl.style.transform='translateX(0)';toEl.style.opacity='1';
+    fromEl.style.transition='transform .3s cubic-bezier(.25,.46,.45,.94),opacity .3s';
+    fromEl.style.transform=goRight?'translateX(-30%)':'translateX(100%)';fromEl.style.opacity='0.8';
+    setTimeout(()=>{
+      fromEl.classList.remove('active');
+      fromEl.style.transform=fromEl.style.opacity=fromEl.style.transition='';
+      toEl.style.transform=toEl.style.opacity=toEl.style.transition='';
+    },310);
+  }));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+name)?.classList.add('active');
+  currentScreen=name;
+};
 </script>
 
 </body>
